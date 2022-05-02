@@ -1,0 +1,113 @@
+<template>
+    <div>
+        <my-send-game :tableData="tableData" :tableLabel="tableLabel" @DelectOrder="DelectOrder"></my-send-game>
+    </div>
+  </template>
+  <script>
+      import MySendGame from '../../src/components/MySendGame.vue'
+      export default{
+          name:'mysetgame',
+          components:{
+            MySendGame,
+        },
+          data(){
+              return{
+                operateForm:{
+                    gameid:'',
+                    gamename:'',
+                    content:'',
+                    completetime:'',
+                    grade:'',
+                    money:'',
+                    system:'',
+                    sendorder:'',
+                    getorder:'',
+                    orderusername:'',
+                    orderpassword:'',
+                },
+                tableData:[],
+                tableLabel:[
+                    {
+                        prop:"gameid",
+                        label:"订单编号"
+                    },
+                    {
+                        prop:"gamename",
+                        label:"游戏名称"
+                    },
+                    {
+                        prop:"content",
+                        label:"订单内容"
+                    },
+                    {
+                        prop:"completetime",
+                        label:"订单时间"
+                    },
+                    {
+                        prop:"grade",
+                        label:"代练等级"
+                    },
+                    {
+                        prop:"money",
+                        label:"价格"
+                    },
+                    {
+                        prop:"systems",
+                        label:"系统",
+                    },
+                    {
+                        prop:"sendorder",
+                        label:"发单人"
+                    },
+                    {
+                        prop:"getorder",
+                        label:"接单人"
+                    },
+                    {
+                        prop:"orderusername",
+                        label:"游戏账号"
+                    },
+                    {
+                        prop:"orderpassword",
+                        label:"游戏密码",
+                    },
+                ],
+              }
+          },
+          methods:{
+            MySendOrder(){
+                var sendorder= this.$store.state.user.token
+                this.$http.post('http://127.0.0.1:3000/api/selectMySet',{sendorder}).then(res=>{
+                    console.log('查找我的发单',res)
+                    this.tableData = res.data
+                })
+            },
+            DelectOrder(gameid,money){
+                var telephone = this.$store.state.user.token
+                this.$confirm("此操作将永久删除此订单，是否继续？","提示",{
+                    confirmButtonText:"确认",
+                    cancelButtonText:"取消",
+                    type:"warning"
+                }).then(()=>{
+                    this.$http.post('http://127.0.0.1:3000/api/delOrder',{gameid}).then(()=>{
+                        this.$message({
+                            type:'success',
+                            message:'删除成功'
+                        })
+                        console.log('删除订单');
+                        this.MySendOrder()
+                    })
+                    this.$http.post('http://127.0.0.1:3000/api/returnMoney',{telephone,money}).then(()=>{
+                        console.log('返还金额');
+                    })
+                })
+            },
+          },
+          mounted:function () {   //自动触发写入的函数
+            this.MySendOrder();
+        }
+      }
+  </script>
+  <style lang="less" scoped>
+
+  </style>
