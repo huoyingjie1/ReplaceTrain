@@ -54,6 +54,7 @@ Vue.use(Descriptions)
 Vue.use(DescriptionsItem)
 Vue.use(Tag)
 
+
 router.beforeEach((to,from,next)=>{
   store.commit('getToken')
   const token = store.state.user.token
